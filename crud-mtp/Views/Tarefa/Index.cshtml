@@ -1,0 +1,248 @@
+﻿<link rel="stylesheet" href="~/css/tarefa.css" asp-append-version="true">
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>To-Do</title>
+        <link rel="stylesheet" href="style.css">
+        <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    </head>
+    <body>
+        <div class="todo-container">
+            <div class="todo rounded">
+                <div class="header">
+                    <p>To-Do List</p>
+                    <button title="Adicionar" data-toggle="modal" data-target="#modalAdicionarTarefa"><i class='bx bxs-plus-circle'></i></button>
+                </div>
+                <div class="result-table">
+                    <table id="gridResultado" class="table grid-resultado rounded table-bordered table-hover cor-padrao-head-grid font-size center" style="width: 100%; background-color: rgb(255, 255, 255);">
+                        <thead>
+                            <tr class="titulo-grid">
+                                <th></th>
+                                <th>Nome</th>
+                                <th>Status</th>
+                                <th>Data Atualização</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<div class="modal fade" id="modalAdicionarTarefa" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 10px;">
+            <div class="modal-header">
+                <h5 class="modal-title titulo" title="Fechar" id="exampleModalLongTitle">Adicionar Tarefa</h5>
+                <button type="button" data-dismiss="modal"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="modal-body">
+                <label class="titulo">Nome</label>
+                <div class="divInsert">
+                    <input class="textInsert" type="text" maxlength="50" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="salvar" title="Salvar"><i class='bx bx-save'></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            carregarTarefas();
+        });
+
+        function carregarTarefas() {
+            $.ajax({
+                url: '/Tarefa/GetAllTarefas',
+                type: 'GET',
+                success: function (data) {
+                    preencherTabela(data);
+                },
+                error: function () {
+                    console.error('Erro ao carregar as tarefas.');
+                }
+            });
+        }
+
+        function preencherTabela(tarefas) {
+            var tabela = $('#gridResultado');
+            var tbody = tabela.find('tbody');
+
+            tbody.empty();
+
+            tarefas.forEach(function (tarefa) {
+                var status = tarefa.concluido ? 'Concluído' : 'Pendente';
+                let dataFormatada = '-';
+                if (tarefa.dataAtualizacao) {
+                    let data = new Date(tarefa.dataAtualizacao);
+                    dataFormatada = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                }
+
+                var row = $('<tr>');
+
+                var checkbox = $('<input type="checkbox" class="custom-checkbox">');
+                checkbox.prop('checked', tarefa.concluido);
+
+                if (tarefa.concluido) {
+                    row.addClass('linha-concluida');
+                }
+
+                checkbox.on('click', function () {
+                    event.preventDefault(); 
+                    var isChecked = !$(this).prop('checked');
+                    toggleLinhaConcluida(row, isChecked, tarefa.id, $(this));
+                });
+                var checkboxCell = $('<td>').append(checkbox);
+                row.append(checkboxCell);
+
+                row.append($('<td>').text(tarefa.nome));
+                row.append($('<td>').text(status));
+                row.append($('<td>').text(dataFormatada));
+
+                var botaoExcluir = $('<i class="bx bx-trash" title="Excluir"></i>');
+                botaoExcluir.css('cursor', 'pointer');
+                botaoExcluir.on('click', function () {
+                    excluirTarefa(tarefa.id);
+                });
+                var cell = $('<td>').append(botaoExcluir);
+                row.append(cell);
+
+                tbody.append(row);
+            });
+        }
+
+        function toggleLinhaConcluida(row, isConcluido, idTarefa, checkbox) {
+            var mensagem;
+            var confirmButtonText;
+            var denyButtonText;
+
+            if (isConcluido) {
+                mensagem = "Desfazer conclusão da tarefa?";
+                confirmButtonText = "Confirmar";
+                denyButtonText = "Fechar";
+            } else {
+                mensagem = "Confirmar a conclusão da tarefa?";
+                confirmButtonText = "Continuar";
+                denyButtonText = "Fechar";
+            }
+
+            Swal.fire({
+                title: mensagem,
+                showDenyButton: true,
+                icon: "warning",
+                confirmButtonText: confirmButtonText,
+                denyButtonText: denyButtonText,
+                confirmButtonColor: "#663399",
+                denyButtonColor: "#A9A9A9",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "PUT",
+                        url: "/Tarefa/UpdateTarefa",
+                        data: {
+                            id: idTarefa,
+                            concluido: !isConcluido
+                        },
+                        success: function (response) {
+                            console.log("Resposta do servidor:", response);
+                            if (isConcluido) {
+                                Swal.fire({
+                                    title: "Conclusão da tarefa desfeita!",
+                                    showConfirmButton: true,
+                                    icon: "success"
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Tarefa concluída!",
+                                    showConfirmButton: true,
+                                    icon: "success"
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            }
+                            checkbox.prop('checked', !isConcluido);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+                } else if (result.isDenied) {
+                }
+            });
+        }
+
+        function excluirTarefa(id) {
+            $.ajax({
+                url: '/Tarefa/DeleteTarefa',
+                method: 'DELETE',
+                data: { id: id },
+                success: function (response) {
+                    Swal.fire({
+                        title: "Tarefa excluída com sucesso!",
+                        showConfirmButton: true,
+                        icon: "success"
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao excluir tarefa:', error);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const texto = document.querySelector('.textInsert');
+            const btnSalvar = document.getElementById('salvar');
+
+            btnSalvar.addEventListener('click', function () {
+                const valorTexto = texto.value;
+                inserirTarefa(valorTexto);
+            });
+
+            function inserirTarefa(texto) {
+                if (!texto || texto.trim() === '') {
+                    console.error('O texto da tarefa não foi fornecido ou é vazio.');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Tarefa/InsertTarefa',
+                    method: 'POST',
+                    data: { nome: texto.trim() },
+                    success: function (response) {
+                        texto.value = '';
+                        Swal.fire({
+                            title: "Tarefa salva com sucesso!",
+                            showConfirmButton: true,
+                            icon: "success"
+                        }).then(() => {
+                            $('#modalAdicionarTarefa').modal('hide');
+                            location.reload();
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Erro ao inserir tarefa:', error);
+                    }
+                });
+            }
+        });
+    </script>
+}
+
+
+

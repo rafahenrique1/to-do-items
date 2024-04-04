@@ -1,0 +1,197 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    background-color: whitesmoke;
+}
+
+p {
+    display: flex;
+    justify-content: center;
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+ul {
+    display: flex;
+    flex-direction: column-reverse;
+    margin-bottom: 20px;
+}
+
+.header button {
+    position: absolute;
+    right: 18%;
+    margin-top: -30px;
+}
+
+.header i {
+    font-size: 40px;
+}
+
+.to-do {
+    margin-top: 40px;
+    width: 60%;
+}
+
+.textInsert {
+    border: none;
+    padding: 10px;
+    outline: none;
+    width: 95%;
+}
+
+.divInsert {
+    border-radius: 10px;
+    box-shadow: 6px 5px 10px 0px grey;
+}
+
+button {
+    width: 10%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.titulo {
+    color: rebeccapurple;
+    font-weight: bold;
+}
+
+.titulo-grid {
+    background-color: rebeccapurple;
+    color: white;
+}
+
+.linha-concluida {
+    background-color: whitesmoke;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled) {
+    width: 100px;
+}
+
+.custom-checkbox {
+    height: 20px;
+    width: 20px;
+    margin-top: 10px;
+}
+
+    .custom-checkbox input:checked {
+        background-color: rebeccapurple;
+    }
+
+
+    .bx-trash {
+        font-size: 30px;
+        margin-left: 10px;
+        border-radius: 50%;
+        padding: 5px;
+        color: rebeccapurple;
+    }
+
+.bx:hover {
+    color: lightgray;
+}
+
+.bx-x {
+    font-size: 30px;
+    margin-left: 10px;
+    border-radius: 50%;
+    padding: 5px;
+    color: rebeccapurple;
+}
+
+.bx-save {
+    font-size: 30px;
+    margin-left: 10px;
+    border-radius: 50%;
+    padding: 5px;
+    color: rebeccapurple;
+}
+
+.bxs-plus-circle {
+    color: rebeccapurple;
+    float: right;
+    margin-top: -25px;
+    margin-right: -7px;
+}
+
+.divLi {
+    margin-top: 20px;
+    padding: 10px;
+    background: lightgray;
+    border-radius: 10px;
+    box-shadow: 6px 5px 10px 0px grey;
+    display: flex;
+    align-items: center;
+}
+
+    .divLi span {
+        width: 80%;
+        color: dimgray;
+    }
+
+    .divLi input {
+        width: 10%;
+        outline: none;
+        accent-color: currentcolor;
+    }
+
+    .divLi i {
+        font-size: 22px;
+        color: brown;
+    }
+
+li {
+    list-style-type: none;
+}
+
+.line-through {
+    text-decoration: line-through;
+}
+
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+.todo-container {
+    margin: 20px auto;
+    width: 100%;
+}
+
+.todo {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    text-align: center;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+.rounded {
+    border-radius: 10px;
+}
